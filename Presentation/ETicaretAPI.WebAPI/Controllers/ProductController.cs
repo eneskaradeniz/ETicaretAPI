@@ -21,12 +21,16 @@ namespace ETicaretAPI.WebAPI.Controllers
         [HttpGet]
         public async Task Get()
         {
-            await _productWriteRepository.AddRangeAsync(
-            [
-                new() { Name = "Product 1", Price = 100, Stock= 10 },
-                new() { Name = "Product 2", Price = 200, Stock= 20 },
-                new() { Name = "Product 3", Price = 300, Stock= 25 }
-            ]);
+            //await _productWriteRepository.AddRangeAsync(
+            //[
+            //    new() { Name = "Product 1", Price = 100, Stock= 10 },
+            //    new() { Name = "Product 2", Price = 200, Stock= 20 },
+            //    new() { Name = "Product 3", Price = 300, Stock= 25 }
+            //]);
+            //await _productWriteRepository.SaveAsync();
+
+            Product p = await _productReadRepository.GetByIdAsync("0DB0C046-0671-4E78-0AC9-08DC655F4D10", false);
+            p.Name = "Ahmet2";
             await _productWriteRepository.SaveAsync();
         }
 
