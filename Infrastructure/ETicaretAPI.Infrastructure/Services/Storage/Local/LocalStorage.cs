@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace ETicaretAPI.Infrastructure.Services.Storage.Local
 {
-    public class LocalStorage : ILocalStorage
+    public class LocalStorage : Storage, ILocalStorage
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
 
@@ -18,7 +18,7 @@ namespace ETicaretAPI.Infrastructure.Services.Storage.Local
 
         public List<string> GetFiles(string path)
         {
-            DirectoryInfo directoryInfo = new DirectoryInfo(path);
+            DirectoryInfo directoryInfo = new(path);
             return directoryInfo.GetFiles().Select(x => x.Name).ToList();
         }
 
@@ -35,8 +35,10 @@ namespace ETicaretAPI.Infrastructure.Services.Storage.Local
             List<(string fileName, string path)> datas = new();
             foreach (var file in files)
             {
-                await CopyFileAsync($"{uploadPath}\\{file.Name}", file);
-                datas.Add((file.Name, $"{path}\\{file.Name}"));
+                string fileNewName = FileRename(uploadPath, file.FileName, HasFile);
+
+                await CopyFileAsync($"{uploadPath}\\{fileNewName}", file);
+                datas.Add((fileNewName, $"{uploadPath}\\{fileNewName}"));
             }
 
             return datas;
@@ -46,7 +48,7 @@ namespace ETicaretAPI.Infrastructure.Services.Storage.Local
         {
             try
             {
-                using FileStream fileStream = new FileStream(path, FileMode.Create, FileAccess.Read, FileShare.None, 1024 * 1024, useAsync: false);
+                await using FileStream fileStream = new(path, FileMode.Create, FileAccess.Write, FileShare.None, 1024 * 1024, useAsync: false);
 
                 await file.CopyToAsync(fileStream);
                 await fileStream.FlushAsync();

@@ -1,23 +1,22 @@
 ﻿using ETicaretAPI.Infrastructure.Operations;
 
-namespace ETicaretAPI.Infrastructure.Services
+namespace ETicaretAPI.Infrastructure.Services.Storage
 {
-    public class FileService
+    public class Storage
     {
-        public string FileRename(string path, string fileName)
+        protected delegate bool HasFile(string pathOrContainerName, string fileName);
+        protected string FileRename(string pathOrContainerName, string fileName, HasFile hasFileMethod)
         {
             string extension = Path.GetExtension(fileName);
             string oldName = Path.GetFileNameWithoutExtension(fileName);
             string regulatedFileName = NameOperation.CharacterRegulatory(oldName);
             string newFileName = $"{regulatedFileName}{extension}";
 
-            string fullPath = Path.Combine(path, newFileName);
             int iteration = 1;
 
-            while (File.Exists(fullPath))
+            while (hasFileMethod(pathOrContainerName, newFileName))
             {
                 newFileName = $"{regulatedFileName}-{iteration}{extension}";
-                fullPath = Path.Combine(path, newFileName);
                 iteration++;
             }
 
