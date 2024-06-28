@@ -95,30 +95,64 @@ namespace ETicaretAPI.WebAPI.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Upload()
+        public async Task<IActionResult> Upload(string id)
         {
-            var datas = await _storageService.UploadAsync("files", Request.Form.Files);
-            await _productImageFileWriteRepository.AddRangeAsync(datas.Select(d => new ProductImageFile
+            List<(string fileName, string pathOrContainerName)> result = await _storageService.UploadAsync("photo-images", Request.Form.Files);
+
+            var product = await _productReadRepository.GetByIdAsync(id);
+
+            //foreach (var r in result)
+            //{
+            //    product.ProductImageFiles.Add(new()
+            //    {
+            //        Name = r.fileName,
+            //        Path = r.pathOrContainerName,
+            //        Storage = _storageService.StorageType,
+            //        Products = [product]
+            //    });
+            //}
+
+            await _productImageFileWriteRepository.AddRangeAsync(result.Select(d => new ProductImageFile
             {
                 Name = d.fileName,
                 Path = d.pathOrContainerName,
-                Storage = _storageService.StorageType
+                Storage = _storageService.StorageType,
+                Products = [product]
             }).ToList());
+
             await _productImageFileWriteRepository.SaveAsync();
+
             return Ok();
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Upload2([FromForm]IFormFileCollection files)
-        { 
-            var datas = await _storageService.UploadAsync("files", files);
-            await _productImageFileWriteRepository.AddRangeAsync(datas.Select(d => new ProductImageFile
+        public async Task<IActionResult> Upload2(string id, [FromForm]IFormFileCollection files)
+        {
+            List<(string fileName, string pathOrContainerName)> result = await _storageService.UploadAsync("photo-images", files);
+
+            var product = await _productReadRepository.GetByIdAsync(id);
+
+            //foreach (var r in result)
+            //{
+            //    product.ProductImageFiles.Add(new()
+            //    {
+            //        Name = r.fileName,
+            //        Path = r.pathOrContainerName,
+            //        Storage = _storageService.StorageType,
+            //        Products = [product]
+            //    });
+            //}
+
+            await _productImageFileWriteRepository.AddRangeAsync(result.Select(d => new ProductImageFile
             {
                 Name = d.fileName,
                 Path = d.pathOrContainerName,
-                Storage = _storageService.StorageType
+                Storage = _storageService.StorageType,
+                Products = [product]
             }).ToList());
+
             await _productImageFileWriteRepository.SaveAsync();
+
             return Ok();
         }
     }

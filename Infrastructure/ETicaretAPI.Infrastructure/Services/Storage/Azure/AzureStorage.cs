@@ -48,7 +48,7 @@ namespace ETicaretAPI.Infrastructure.Services.Storage.Azure
 
                 BlobClient blolbClient = _blobContainerClient.GetBlobClient(fileNewName);
                 await blolbClient.UploadAsync(file.OpenReadStream());
-                datas.Add((fileNewName, containerName));
+                datas.Add((fileNewName, $"{containerName}/{fileNewName}"));
             }
 
             return datas;
