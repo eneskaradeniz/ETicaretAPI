@@ -4,6 +4,7 @@ using ETicaretAPI.Application.RequestParameters;
 using ETicaretAPI.Application.ViewModels.Products;
 using ETicaretAPI.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Net;
 
 namespace ETicaretAPI.WebAPI.Controllers
@@ -21,8 +22,9 @@ namespace ETicaretAPI.WebAPI.Controllers
         private readonly IInvoiceFileWriteRepository _invoiceFileWriteRepository;
         private readonly IInvoiceFileReadRepository _invoiceFileReadRepository;
         private readonly IStorageService _storageService;
+        private readonly IConfiguration _configuration;
 
-        public ProductController(IProductWriteRepository productWriteRepository, IProductReadRepository productReadRepository, IFileWriteRepository fileWriteRepository, IFileReadRepository fileReadRepository, IProductImageFileReadRepository productImageFileReadRepository, IProductImageFileWriteRepository productImageFileWriteRepository, IInvoiceFileWriteRepository invoiceFileWriteRepository, IInvoiceFileReadRepository invoiceFileReadRepository, IStorageService storageService)
+        public ProductController(IProductWriteRepository productWriteRepository, IProductReadRepository productReadRepository, IFileWriteRepository fileWriteRepository, IFileReadRepository fileReadRepository, IProductImageFileReadRepository productImageFileReadRepository, IProductImageFileWriteRepository productImageFileWriteRepository, IInvoiceFileWriteRepository invoiceFileWriteRepository, IInvoiceFileReadRepository invoiceFileReadRepository, IStorageService storageService, IConfiguration configuration)
         {
             _productWriteRepository = productWriteRepository;
             _productReadRepository = productReadRepository;
@@ -33,6 +35,7 @@ namespace ETicaretAPI.WebAPI.Controllers
             _invoiceFileWriteRepository = invoiceFileWriteRepository;
             _invoiceFileReadRepository = invoiceFileReadRepository;
             _storageService = storageService;
+            _configuration = configuration;
         }
 
         [HttpGet]
@@ -125,6 +128,7 @@ namespace ETicaretAPI.WebAPI.Controllers
             return Ok();
         }
 
+        // *-* SWAGGER'DAN TEST AMAÇLI EKLENDİ *-*
         [HttpPost("[action]")]
         public async Task<IActionResult> Upload2(string id, [FromForm]IFormFileCollection files)
         {
@@ -151,6 +155,35 @@ namespace ETicaretAPI.WebAPI.Controllers
                 Products = [product]
             }).ToList());
 
+            await _productImageFileWriteRepository.SaveAsync();
+
+            return Ok();
+        }
+    
+        [HttpGet("[action]/{id}")]
+        public async Task<IActionResult> GetProductImages(string id)
+        {
+            Product? product = await _productReadRepository.Table.Include(p => p.ProductImageFiles)
+                .FirstOrDefaultAsync(p => p.Id == Guid.Parse(id));
+
+            return Ok(product.ProductImageFiles.Select(p => new
+            {
+                p.Name,
+                Path = $"{_configuration["BaseStorageUrl"]}/{p.Path}"
+            }));
+        }
+
+        [HttpDelete("[action]/{id}/{imageId}")]
+        public async Task<IActionResult> DeleteProductImage(string id, string imageId)
+        {
+            Product? product = await _productReadRepository.Table
+                .Include(p => p.ProductImageFiles)
+                .FirstOrDefaultAsync(p => p.Id == Guid.Parse(id));
+
+            ProductImageFile? productImageFile = product.ProductImageFiles
+                .FirstOrDefault(p => p.Id == Guid.Parse(imageId));
+
+            _productImageFileWriteRepository.Remove(productImageFile);
             await _productImageFileWriteRepository.SaveAsync();
 
             return Ok();
