@@ -1,4 +1,5 @@
-﻿using ETicaretAPI.Application.Exceptions;
+﻿using ETicaretAPI.Application.Abstractions.Token;
+using ETicaretAPI.Application.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
@@ -8,18 +9,19 @@ namespace ETicaretAPI.Application.Features.Commands.AppUser.LoginUser
     {
         private readonly UserManager<Domain.Entities.Identity.AppUser> _userManager;
         private readonly SignInManager<Domain.Entities.Identity.AppUser> _signInManager;
+        private readonly ITokenHandler _tokenHandler;
 
-        public LoginUserCommandHandler(UserManager<Domain.Entities.Identity.AppUser> userManager, SignInManager<Domain.Entities.Identity.AppUser> signInManager)
+        public LoginUserCommandHandler(UserManager<Domain.Entities.Identity.AppUser> userManager, SignInManager<Domain.Entities.Identity.AppUser> signInManager, ITokenHandler tokenHandler)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _tokenHandler = tokenHandler;
         }
 
         public async Task<LoginUserCommandResponse> Handle(LoginUserCommandRequest request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByNameAsync(request.UsernameOrEmail);
             user ??= await _userManager.FindByEmailAsync(request.UsernameOrEmail);
-
             if (user == null)
                 throw new UserNotFoundException();
 
@@ -27,7 +29,12 @@ namespace ETicaretAPI.Application.Features.Commands.AppUser.LoginUser
             if (!result.Succeeded)
                 throw new InvalidPasswordException();
 
-            return new();
+            var token = _tokenHandler.CreateAccessToken(5);
+
+            return new()
+            {
+                Token = token
+            };
         }
     }
 }
