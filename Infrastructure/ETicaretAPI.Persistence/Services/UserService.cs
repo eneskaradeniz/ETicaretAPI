@@ -1,14 +1,15 @@
 ﻿using ETicaretAPI.Application.Abstractions.Services;
 using ETicaretAPI.Application.DTOs.User;
+using ETicaretAPI.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 
 namespace ETicaretAPI.Persistence.Services
 {
     public class UserService : IUserService
     {
-        private readonly UserManager<Domain.Entities.Identity.AppUser> _userManager;
+        private readonly UserManager<AppUser> _userManager;
 
-        public UserService(UserManager<Domain.Entities.Identity.AppUser> userManager)
+        public UserService(UserManager<AppUser> userManager)
         {
             _userManager = userManager;
         }
@@ -31,6 +32,14 @@ namespace ETicaretAPI.Persistence.Services
                     response.Message += $"{error.Code} - {error.Description}";
 
             return response;
+        }
+
+        public async Task<bool> UpdateRefreshToken(AppUser user, string refreshToken, DateTime accessTokenDate, int addOnAccessTokenDate)
+        {
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenEndDate = accessTokenDate.AddMinutes(addOnAccessTokenDate);
+            await _userManager.UpdateAsync(user);
+            return true;
         }
     }
 }
