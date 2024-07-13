@@ -5,6 +5,7 @@ using ETicaretAPI.Infrastructure.Filters;
 using ETicaretAPI.Infrastructure.Services.Storage.Azure;
 using ETicaretAPI.Infrastructure.Services.Storage.Local;
 using ETicaretAPI.Persistence;
+using ETicaretAPI.SignalR;
 using ETicaretAPI.WebAPI.Extensions;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -24,12 +25,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddPersistenceServices();
 builder.Services.AddInfrastructureServices();
 builder.Services.AddApplicationServices();
+builder.Services.AddSignalRServices();
 
 builder.Services.AddStorage<AzureStorage>();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+    options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());
 });
 
 var columnOptions = new ColumnOptions()
@@ -124,5 +126,6 @@ app.Use(async (context, next) =>
 });
 
 app.MapControllers();
+app.MapHubs();
 
 app.Run();
