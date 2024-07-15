@@ -1,4 +1,5 @@
 ﻿using ETicaretAPI.Application.Abstractions.Hubs;
+using ETicaretAPI.SignalR.HubServices;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ETicaretAPI.SignalR
@@ -7,7 +8,7 @@ namespace ETicaretAPI.SignalR
     {
         public static void AddSignalRServices(this IServiceCollection services)
         {
-            services.AddTransient<IProductHubService, IProductHubService>();
+            services.AddTransient<IProductHubService, ProductHubService>();
             services.AddSignalR();
         }
     }
