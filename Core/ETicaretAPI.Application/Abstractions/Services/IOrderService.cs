@@ -6,6 +6,7 @@ namespace ETicaretAPI.Application.Abstractions.Services
     public interface IOrderService
     {
         Task<ListOrder> GetAllOrdersAsync(Pagination pagination);
+        Task<SingleOrder> GetOrderById(string id);
         Task CreateOrderAsync(CreateOrder createOrder);
     }
 }
