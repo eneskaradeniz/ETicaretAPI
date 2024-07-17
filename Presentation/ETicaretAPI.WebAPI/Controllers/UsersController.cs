@@ -1,5 +1,6 @@
-﻿using ETicaretAPI.Application.Features.Commands.AppUser.CreateUser;
-using ETicaretAPI.Application.Features.Commands.AppUser.LoginUser;
+﻿using ETicaretAPI.Application.Abstractions.Services;
+using ETicaretAPI.Application.Features.Commands.AppUser.CreateUser;
+using ETicaretAPI.Application.Features.Commands.AppUser.UpdatePassword;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,18 +10,27 @@ namespace ETicaretAPI.WebAPI.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IMediator _mediator;
+        readonly IMediator _mediator;
+        readonly IMailService _mailService;
 
-        public UsersController(IMediator mediator)
+        public UsersController(IMediator mediator, IMailService mailService)
         {
             _mediator = mediator;
+            _mailService = mailService;
         }
 
-        [HttpPost("[action]")]
+        [HttpPost]
         public async Task<IActionResult> CreateUser(CreateUserCommandRequest request)
         {
             var response = await _mediator.Send(request);
             return Ok(response);
+        }
+
+        [HttpPost("update-password")]
+        public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordCommandRequest request)
+        {
+            await _mediator.Send(request);
+            return Ok();
         }
     }
 }

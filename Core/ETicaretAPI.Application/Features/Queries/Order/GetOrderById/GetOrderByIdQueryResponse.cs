@@ -7,6 +7,7 @@
         public string Address { get; set; }
         public string OrderCode { get; set; }
         public DateTime CreatedDate { get; set; }
+        public bool Completed { get; set; }
 
         public object BasketItems { get; set; }
     }

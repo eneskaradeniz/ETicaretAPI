@@ -2,6 +2,8 @@
 using ETicaretAPI.Application.Features.Commands.AppUser.LoginUser;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using ETicaretAPI.Application.Features.Commands.AppUser.PasswordReset;
+using ETicaretAPI.Application.Features.Commands.AppUser.VerifyResetToken;
 
 namespace ETicaretAPI.WebAPI.Controllers
 {
@@ -25,6 +27,20 @@ namespace ETicaretAPI.WebAPI.Controllers
 
         [HttpGet("[action]")]
         public async Task<IActionResult> LoginRefreshToken([FromForm] RefreshTokenLoginCommandRequest request)
+        {
+            var response = await _mediator.Send(request);
+            return Ok(response);
+        }
+
+        [HttpPost("password-reset")]
+        public async Task<IActionResult> PasswordReset([FromBody] PasswordResetCommandRequest request)
+        {
+            var response = await _mediator.Send(request);
+            return Ok(response);
+        }
+
+        [HttpPost("verify-reset-token")]
+        public async Task<IActionResult> VerifyResetToken([FromBody] VerifyResetTokenCommandRequest request)
         {
             var response = await _mediator.Send(request);
             return Ok(response);

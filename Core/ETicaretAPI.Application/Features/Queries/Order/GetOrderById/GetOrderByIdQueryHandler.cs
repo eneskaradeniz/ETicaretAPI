@@ -1,4 +1,5 @@
 ﻿using ETicaretAPI.Application.Abstractions.Services;
+using ETicaretAPI.Domain.Entities;
 using MediatR;
 
 namespace ETicaretAPI.Application.Features.Queries.Order.GetOrderById
@@ -23,6 +24,7 @@ namespace ETicaretAPI.Application.Features.Queries.Order.GetOrderById
                 OrderCode = data.OrderCode,
                 CreatedDate = data.CreatedDate,
                 BasketItems = data.BasketItems,
+                Completed = data.Completed,
             };
         }
     }
