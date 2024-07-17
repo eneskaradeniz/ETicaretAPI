@@ -8,6 +8,6 @@ namespace ETicaretAPI.Application.Abstractions.Services
         Task<ListOrder> GetAllOrdersAsync(Pagination pagination);
         Task<SingleOrder> GetOrderById(string id);
         Task CreateOrderAsync(CreateOrder createOrder);
-        Task CompleteOrderAsync(string id);
+        Task<(bool, CompletedOrderDTO)> CompleteOrderAsync(string id);
     }
 }
