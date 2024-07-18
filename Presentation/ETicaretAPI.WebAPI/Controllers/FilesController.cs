@@ -14,7 +14,7 @@ namespace ETicaretAPI.WebAPI.Controllers
         }
 
         [HttpGet("[action]")]
-        public IActionResult GetBaseUrl()
+        public IActionResult GetBaseStorageUrl()
         {
             return Ok(new
             {
