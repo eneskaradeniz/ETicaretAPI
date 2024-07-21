@@ -10,6 +10,7 @@ namespace ETicaretAPI.Application.Abstractions.Services
         Task<bool> UpdateRefreshTokenAsync(AppUser user, string refreshToken, DateTime accessTokenDate, int addOnAccessTokenDate);
         Task UpdatePasswordAsync(string userId, string resetToken, string newPassword);
         Task AssignRoleToUserAsync(string userId, string[] roles);
-        Task<string[]> GetRolesToUserAsync(string userId);
+        Task<string[]> GetRolesToUserAsync(string userIdOrName);
+        Task<bool> HasRolePermissionToEndpointAsync(string userName, string code);
     }
 }

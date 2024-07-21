@@ -13,7 +13,7 @@ namespace ETicaretAPI.WebAPI.Controllers
 
         public AuthorizationEndpointsController(IMediator mediator)
         {
-            _mediator = mediator;  
+            _mediator = mediator;
         }
 
         [HttpPost("[action]")]
