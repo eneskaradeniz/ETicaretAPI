@@ -16,9 +16,15 @@ namespace ETicaretAPI.Persistence.Services
         public (object, int) GetAllRoles(int page, int size)
         {
             var query = _roleManager.Roles;
-            var datas = query.Skip(page * size).Take(size).Select(x => new { x.Id, x.Name });
-            var totalCount = query.Count();
-            return (datas, totalCount);
+
+            IQueryable<AppRole>? rolesQuery = null;
+
+            if (page != -1 && size != -1)
+                rolesQuery = query.Skip(page * size).Take(size);
+            else
+                rolesQuery = query;
+
+            return (rolesQuery.Select(r => new { r.Id, r.Name }), query.Count());
         }
 
         public async Task<(string id, string name)> GetRoleById(string id)
@@ -36,7 +42,7 @@ namespace ETicaretAPI.Persistence.Services
         public async Task<bool> DeleteRoleAsync(string id)
         {
             var role = await _roleManager.FindByIdAsync(id);
-            if(role == null) return false;
+            if (role == null) return false;
             var result = await _roleManager.DeleteAsync(role);
             return result.Succeeded;
         }
@@ -44,7 +50,7 @@ namespace ETicaretAPI.Persistence.Services
         public async Task<bool> UpdateRole(string id, string name)
         {
             var role = await _roleManager.FindByIdAsync(id);
-            if(role == null) return false;
+            if (role == null) return false;
             role.Name = name;
             var result = await _roleManager.UpdateAsync(role);
             return result.Succeeded;
