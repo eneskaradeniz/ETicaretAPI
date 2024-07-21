@@ -4,6 +4,7 @@ using ETicaretAPI.Application.Exceptions;
 using ETicaretAPI.Application.Helpers;
 using ETicaretAPI.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace ETicaretAPI.Persistence.Services
 {
@@ -56,6 +57,56 @@ namespace ETicaretAPI.Persistence.Services
                 await _userManager.UpdateSecurityStampAsync(user);
             else
                 throw new PasswordChangedFailedException();
+        }
+
+        public async Task<ListUser> GetAllUsersAsync(int page, int size)
+        {
+            var query = _userManager.Users;
+
+            var datas = await query
+                .Skip(page * size)
+                .Take(size)
+                .ToListAsync();
+
+            var users = datas.Select(user => new
+            {
+                Id = user.Id,
+                Email = user.Email,
+                NameSurname = user.NameSurname,
+                TwoFactorEnabled = user.TwoFactorEnabled,
+                UserName = user.UserName,
+            }).ToList();
+
+            var totalUserCount = await query.CountAsync();
+
+            return new()
+            {
+                TotalUserCount = totalUserCount,
+                Users =  users
+            };
+        }
+
+        public async Task AssignRoleToUserAsync(string userId, string[] roles)
+        {
+            AppUser user = await _userManager.FindByIdAsync(userId);
+            if(user != null)
+            {
+                var userRoles = await _userManager.GetRolesAsync(user);
+                await _userManager.RemoveFromRolesAsync(user, userRoles);
+
+                await _userManager.AddToRolesAsync(user, roles);
+            }
+        }
+
+        public async Task<string[]> GetRolesToUserAsync(string userId)
+        {
+            AppUser user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                var userRoles = await _userManager.GetRolesAsync(user);
+                return userRoles.ToArray();
+            }
+            return [];
         }
     }
 }
