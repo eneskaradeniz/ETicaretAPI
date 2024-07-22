@@ -31,10 +31,9 @@ builder.Services.AddSignalRServices();
 
 builder.Services.AddStorage<AzureStorage>();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", builder => builder.AllowAnyMethod().AllowAnyHeader().AllowCredentials());
-});
+builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
+    policy.WithOrigins("http://localhost:4200", "https://localhost:4200").AllowAnyHeader().AllowAnyMethod().AllowCredentials()
+));
 
 var columnOptions = new ColumnOptions()
 {

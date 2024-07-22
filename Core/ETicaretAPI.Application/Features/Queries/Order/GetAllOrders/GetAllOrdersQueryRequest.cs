@@ -1,10 +1,10 @@
-﻿using ETicaretAPI.Application.RequestParameters;
-using MediatR;
+﻿using MediatR;
 
 namespace ETicaretAPI.Application.Features.Queries.Order.GetAllOrders
 {
     public class GetAllOrdersQueryRequest : IRequest<GetAllOrdersQueryResponse>
     {
-        public Pagination Pagination { get; set; }
+        public int Page { get; set; } = 0;
+        public int Size { get; set; } = 5;
     }
 }

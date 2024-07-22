@@ -31,7 +31,7 @@ namespace ETicaretAPI.WebAPI.Controllers
             return Ok(response);
         }
 
-        [HttpPost("[action]")]
+        [HttpPost]
         [AuthorizeDefinition(Menu = AuthorizeDefinitionConstants.Baskets, ActionType = ActionType.Writing, Definition = "Create Basket Item")]
         public async Task<IActionResult> CreateBasketItem(CreateBasketItemCommandRequest request)
         {
@@ -39,7 +39,7 @@ namespace ETicaretAPI.WebAPI.Controllers
             return Ok(response);
         }
 
-        [HttpPost("[action]")]
+        [HttpPut]
         [AuthorizeDefinition(Menu = AuthorizeDefinitionConstants.Baskets, ActionType = ActionType.Updating, Definition = "Update Basket Item")]
         public async Task<IActionResult> UpdateBasketItem(UpdateBasketItemCommandRequest request)
         {

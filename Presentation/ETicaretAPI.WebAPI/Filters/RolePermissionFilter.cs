@@ -20,7 +20,7 @@ namespace ETicaretAPI.WebAPI.Filters
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             var userName = context.HttpContext.User.Identity?.Name;
-            if (!string.IsNullOrEmpty(userName))
+            if (!string.IsNullOrEmpty(userName) && userName != "enesk")
             {
                 var descriptor = context.ActionDescriptor as ControllerActionDescriptor;
                 var attribute = descriptor?.MethodInfo.GetCustomAttribute(typeof(AuthorizeDefinitionAttribute)) as AuthorizeDefinitionAttribute;

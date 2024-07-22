@@ -21,12 +21,12 @@ namespace ETicaretAPI.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductController : ControllerBase
+    public class ProductsController : ControllerBase
     {
         readonly IMediator _mediator;
         readonly IProductService _productService;
 
-        public ProductController(IMediator mediator, IProductService productService)
+        public ProductsController(IMediator mediator, IProductService productService)
         {
             _mediator = mediator;
             _productService = productService;

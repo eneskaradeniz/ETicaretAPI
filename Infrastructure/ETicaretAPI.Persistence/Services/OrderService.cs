@@ -1,7 +1,6 @@
 ﻿using ETicaretAPI.Application.Abstractions.Services;
 using ETicaretAPI.Application.DTOs.Order;
 using ETicaretAPI.Application.Repositories;
-using ETicaretAPI.Application.RequestParameters;
 using ETicaretAPI.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,7 +36,7 @@ namespace ETicaretAPI.Persistence.Services
             await _orderWriteRepository.SaveAsync();
         }
 
-        public async Task<ListOrder> GetAllOrdersAsync(Pagination pagination)
+        public async Task<ListOrder> GetAllOrdersAsync(int page, int size)
         {
             var query = _orderReadRepository.Table
                 .Include(o => o.Basket)
@@ -46,7 +45,7 @@ namespace ETicaretAPI.Persistence.Services
                     .ThenInclude(b => b.BasketItems)
                     .ThenInclude(bi => bi.Product);
 
-            var data = query.Skip(pagination.Page * pagination.Size).Take(pagination.Size);
+            var data = query.Skip(page * size).Take(size);
 
             var data2 = from order in data
                         join completedOrder in _completedOrderReadRepository.Table

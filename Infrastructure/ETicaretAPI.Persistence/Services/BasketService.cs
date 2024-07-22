@@ -43,22 +43,24 @@ namespace ETicaretAPI.Persistence.Services
 
             var _basket = from basket in user.Baskets
                           join order in _orderReadRepository.Table
-                          on basket.Id equals order.Id into orders
-                          from o in orders.DefaultIfEmpty()
+                          on basket.Id equals order.Id into BasketOrders
+                          from order in BasketOrders.DefaultIfEmpty()
                           select new
                           {
                               Basket = basket,
-                              Order = orders
+                              Order = order
                           };
 
-            Basket? targetBasket = new();
+            Basket? targetBasket = null;
             if (_basket.Any(b => b.Order is null))
                 targetBasket = _basket.FirstOrDefault(b => b.Order is null)?.Basket;
             else
+            {
+                targetBasket = new();
                 user.Baskets.Add(targetBasket);
+            }
 
             await _basketWriteRepository.SaveAsync();
-
             return targetBasket;
         }
 
@@ -74,7 +76,7 @@ namespace ETicaretAPI.Persistence.Services
                 }
                 else
                 {
-                    await _basketItemWriteRepository.AddAsync(new BasketItem
+                    await _basketItemWriteRepository.AddAsync(new()
                     {
                         BasketId = basket.Id,
                         ProductId = Guid.Parse(createBasketItem.ProductId),

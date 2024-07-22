@@ -43,7 +43,7 @@ namespace ETicaretAPI.WebAPI.Controllers
         [HttpGet]
         [Authorize(AuthenticationSchemes = "Admin")]
         [AuthorizeDefinition(ActionType = ActionType.Reading, Definition = "Get All Users", Menu = AuthorizeDefinitionConstants.Users)]
-        public async Task<IActionResult> GetAllUsers(GetAllUsersQueryRequest request)
+        public async Task<IActionResult> GetAllUsers([FromQuery] GetAllUsersQueryRequest request)
         {
             var response = await _mediator.Send(request);
             return Ok(response);
